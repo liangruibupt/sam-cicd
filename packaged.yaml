@@ -20,6 +20,9 @@ Parameters:
     Type: String
     Default: AllAtOnce
     AllowedValues:
+    - Canary20Percent3Minutes
+    - Canary50Percent1Minutes
+    - Canary50Percent5Minutes
     - Canary10Percent5Minutes
     - Canary10Percent10Minutes
     - Canary10Percent15Minutes
@@ -31,13 +34,17 @@ Parameters:
     - AllAtOnce
     Description: https://docs.aws.amazon.com/lambda/latest/dg/automating-updates-to-serverless-apps.html
 Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName:
+        Fn::Sub: ${Env}
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://aws-nikofeng-us-west-2-devops-bucket/72957a92a6179941b32e92ab63a48151
+      CodeUri: s3://serverless-hands-on/sam-app-demo/06a4726d629a844e6bd9493535c3eac8
       Handler: app.lambda_handler
       Runtime: python3.7
-      Tracing: Active
       FunctionName:
         Fn::Sub: sam-app-HelloWorldFunction-${Env}
       Events:
@@ -46,6 +53,8 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+            RestApiId:
+              Ref: MyApi
       AutoPublishAlias: live
       DeploymentPreference:
         Type:
@@ -55,7 +64,7 @@ Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+      Fn::Sub: https://${MyApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Env}/hello
   HelloWorldFunction:
     Description: Hello World Lambda Function ARN
     Value:

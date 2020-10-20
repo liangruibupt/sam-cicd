@@ -6,4 +6,4 @@ sam validate && \
 sam build && \
 sam package \
     --output-template-file packaged.yaml \
-    --s3-bucket $S3_BUCKET
+    --s3-bucket $S3_BUCKET --s3-prefix $S3_PREFIX
