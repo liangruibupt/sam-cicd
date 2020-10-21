@@ -2,6 +2,8 @@ import json
 
 import requests
 
+from datetime import datetime
+
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -32,11 +34,13 @@ def lambda_handler(event, context):
         print(e)
 
         raise e
-
+    
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d-%H-%M-%S")
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world! v1.4",
+            "message": "hello world! canary " + dt_string,
             "location": ip.text.replace("\n", "")
         }),
     }
